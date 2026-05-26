@@ -563,9 +563,226 @@
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* ─── TERMINAL GATE ──────────────────────────────────── */
+    #gate {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: #0d1117;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+
+    #gate.unlocking {
+      opacity: 0;
+      transform: scale(1.04);
+      pointer-events: none;
+    }
+
+    .gate-terminal {
+      width: 100%;
+      max-width: 560px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    .gate-titlebar {
+      background: #21262d;
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .gate-dot        { width: 12px; height: 12px; border-radius: 50%; }
+    .gate-dot.red    { background: #ff5f57; }
+    .gate-dot.amber  { background: #febc2e; }
+    .gate-dot.green  { background: #28c840; }
+
+    .gate-tab-title {
+      margin-left: 10px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.74rem;
+      color: #8b949e;
+      letter-spacing: 0.02em;
+    }
+
+    .gate-body {
+      padding: 24px 28px 30px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .gate-log {
+      font-size: 0.8rem;
+      line-height: 2;
+      margin-bottom: 6px;
+    }
+
+    .g-dim    { color: #484f58; }
+    .g-muted  { color: #8b949e; }
+    .g-blue   { color: #58a6ff; }
+    .g-green  { color: #3fb950; }
+    .g-purple { color: #d2a8ff; }
+    .g-white  { color: #e6edf3; }
+
+    .gate-code-block {
+      margin: 18px 0 16px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-left: 3px solid #58a6ff;
+      border-radius: 6px;
+      padding: 16px 20px;
+      font-size: 0.875rem;
+      line-height: 2;
+    }
+
+    .kw  { color: #ff7b72; }
+    .num { color: #79c0ff; }
+    .fn  { color: #d2a8ff; }
+    .cm  { color: #8b949e; font-style: italic; }
+    .pl  { color: #e6edf3; }
+
+    .gate-question {
+      font-size: 0.78rem;
+      color: #8b949e;
+      margin-bottom: 14px;
+    }
+
+    .gate-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px 14px;
+      transition: border-color 0.2s;
+    }
+
+    .gate-input-row:focus-within { border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,0.1); }
+    .gate-input-row.error   { border-color: #f85149; animation: shake 0.4s ease; }
+    .gate-input-row.success { border-color: #3fb950; box-shadow: 0 0 0 3px rgba(63,185,80,0.15); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-7px); }
+      40%       { transform: translateX(7px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    .gate-dollar { color: #3fb950; font-size: 0.85rem; user-select: none; }
+
+    #gate-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: #e6edf3;
+      caret-color: #58a6ff;
+      min-width: 0;
+    }
+
+    #gate-input::placeholder { color: #484f58; }
+
+    #gate-submit {
+      flex-shrink: 0;
+      background: #238636;
+      border: 1px solid rgba(240,246,252,0.1);
+      border-radius: 5px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.78rem;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    #gate-submit:hover { background: #2ea043; }
+
+    .gate-feedback {
+      margin-top: 12px;
+      font-size: 0.77rem;
+      min-height: 18px;
+      line-height: 1.5;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .gate-feedback.err { color: #f85149; }
+    .gate-feedback.win { color: #3fb950; }
+
+    /* ─── FLOATING CODE IN HERO ──────────────────────────── */
+    .code-float {
+      position: absolute;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.7rem;
+      pointer-events: none;
+      opacity: 0;
+      animation: codeFloat linear infinite;
+      white-space: nowrap;
+      z-index: 0;
+    }
+
+    @keyframes codeFloat {
+      0%   { opacity: 0;    transform: translateY(20px); }
+      8%   { opacity: 0.22; }
+      88%  { opacity: 0.14; }
+      100% { opacity: 0;    transform: translateY(-85vh); }
+    }
   </style>
 </head>
 <body>
+
+<!-- ═══ TERMINAL GATE ════════════════════════════════════ -->
+<div id="gate">
+  <div class="gate-terminal">
+
+    <div class="gate-titlebar">
+      <div class="gate-dot red"></div>
+      <div class="gate-dot amber"></div>
+      <div class="gate-dot green"></div>
+      <span class="gate-tab-title">henisha://birthday/george — bash</span>
+    </div>
+
+    <div class="gate-body">
+      <p class="gate-log"><span class="g-blue">→</span> <span class="g-muted">Loading surprise...</span></p>
+      <p class="gate-log"><span class="g-green">✓</span> <span class="g-muted">is_developer:</span> <span class="g-white">true</span></p>
+      <p class="gate-log"><span class="g-green">✓</span> <span class="g-muted">is_handsome:</span>  <span class="g-white">true</span></p>
+      <p class="gate-log"><span class="g-blue">→</span> <span class="g-muted">Verifying identity... one quick challenge:</span></p>
+
+      <div class="gate-code-block">
+        <span class="kw">let</span><span class="pl"> age = </span><span class="num">25</span><span class="pl">;</span><br/>
+        <span class="pl">age</span><span class="kw">++</span><span class="pl">;</span><br/>
+        <span class="fn">console</span><span class="pl">.</span><span class="fn">log</span><span class="pl">(age);</span><br/>
+        <span class="cm">// what does this print?</span>
+      </div>
+
+      <p class="gate-question"><span class="g-blue">?</span> Type the output and press Enter</p>
+
+      <div class="gate-input-row" id="gate-row">
+        <span class="gate-dollar">$</span>
+        <input id="gate-input" type="text" placeholder="your answer..." autocomplete="off" autofocus />
+        <button id="gate-submit">Run ▶</button>
+      </div>
+
+      <p class="gate-feedback" id="gate-feedback"></p>
+    </div>
+
+  </div>
+</div>
 
 <!-- Floating petals -->
 <div id="petals"></div>
@@ -835,6 +1052,70 @@
 
 <!-- ═══ JS ═════════════════════════════════════════════════════ -->
 <script>
+  // ── Terminal gate ────────────────────────────────────────────
+  const gate       = document.getElementById('gate');
+  const gateRow    = document.getElementById('gate-row');
+  const gateInput  = document.getElementById('gate-input');
+  const gateFb     = document.getElementById('gate-feedback');
+  let attempts     = 0;
+  const ANSWER     = '26';
+
+  const ERRORS = [
+    val => `SyntaxError: "${val}" is not the expected output. Try again.`,
+    val => `TypeError: "${val}" — expected a Number. Think it through!`,
+    val => `RangeError: "${val}" out of range. Hint: it's a special number today 🎂`,
+  ];
+
+  function checkAnswer() {
+    const val = gateInput.value.trim();
+    if (val === ANSWER) {
+      gateRow.classList.add('success');
+      gateFb.className = 'gate-feedback win';
+      gateFb.textContent = '✓ Correct! ACCESS GRANTED — Happy Birthday, George 🎂';
+      setTimeout(() => {
+        gate.classList.add('unlocking');
+        setTimeout(() => { gate.style.display = 'none'; }, 950);
+      }, 1000);
+    } else {
+      gateRow.classList.remove('error');
+      void gateRow.offsetWidth; // force reflow for re-animation
+      gateRow.classList.add('error');
+      setTimeout(() => gateRow.classList.remove('error'), 450);
+      gateFb.className = 'gate-feedback err';
+      gateFb.textContent = ERRORS[Math.min(attempts, ERRORS.length - 1)](val);
+      attempts++;
+      gateInput.value = '';
+      gateInput.focus();
+    }
+  }
+
+  document.getElementById('gate-submit').addEventListener('click', checkAnswer);
+  gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+
+  // ── Floating code snippets in hero ───────────────────────────
+  const codeSnippets = [
+    'love++', 'return george;', 'forever = true',
+    'if (you) smile();', 'git commit -m "us"',
+    'const joy = you', 'while(true) { love(); }',
+    '// happy birthday!', 'push(love)', '❤️ === true',
+    'merge(our_hearts)', 'age = 26', '// you\'re the best',
+  ];
+
+  const heroEl = document.getElementById('hero');
+  codeSnippets.forEach((text, i) => {
+    const el = document.createElement('span');
+    el.className = 'code-float';
+    el.textContent = text;
+    el.style.cssText = `
+      left: ${4 + Math.random() * 88}%;
+      bottom: ${-2 + Math.random() * 8}%;
+      color: ${i % 2 === 0 ? 'var(--blush-deep)' : 'var(--gold)'};
+      animation-duration: ${14 + Math.random() * 14}s;
+      animation-delay: ${Math.random() * 12}s;
+    `;
+    heroEl.appendChild(el);
+  });
+
   // ── Petal rain ──────────────────────────────────────────────
   const container = document.getElementById('petals');
   const count = window.innerWidth < 600 ? 18 : 30;
