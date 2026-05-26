@@ -220,10 +220,10 @@
       gap: 16px;
     }
 
-    .photo-grid.four { grid-template-columns: repeat(2, 1fr); }
+    .photo-grid.three { grid-template-columns: repeat(3, 1fr); max-width: 720px; margin: 0 auto; }
 
-    @media (min-width: 640px) {
-      .photo-grid.four { grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 500px) {
+      .photo-grid.three { grid-template-columns: 1fr 1fr; }
     }
 
     .photo-card {
@@ -599,7 +599,7 @@
       </p>
     </div>
 
-    <div class="photo-grid four reveal">
+    <div class="photo-grid three reveal">
 
       <!-- Photo 1: Bob the Builder toddler -->
       <div class="photo-card tall">
@@ -620,13 +620,6 @@
         <img src="images/george-schoolphoto.jpg" alt="George's school photo"
              onerror="this.parentElement.innerHTML=`<div class='photo-placeholder'><div class='ph-icon'>🪑</div><div class='ph-label'>george-schoolphoto.jpg<br/>School photo, red chair</div></div>`" />
         <div class="photo-caption">That smile has always been everything.</div>
-      </div>
-
-      <!-- Photo 4: Grass / outdoor child photo -->
-      <div class="photo-card tall">
-        <img src="images/george-grass.jpg" alt="George as a child sitting on grass"
-             onerror="this.parentElement.innerHTML=`<div class='photo-placeholder'><div class='ph-icon'>🌿</div><div class='ph-label'>george-grass.jpg<br/>Child sitting on grass</div></div>`" />
-        <div class="photo-caption">A whole world ahead of him.</div>
       </div>
 
     </div>
