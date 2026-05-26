@@ -6,7 +6,7 @@
   <title>Happy 26th Birthday, George 🤍</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Great+Vibes&family=Alex+Brush&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -454,58 +454,165 @@
       background: linear-gradient(160deg, #fff5f0 0%, #fdf6ee 100%);
     }
 
-    .letter-card {
-      background: var(--white);
-      border-radius: 16px;
-      box-shadow: 0 8px 40px rgba(61,43,31,0.08);
-      padding: clamp(32px, 6vw, 64px);
-      max-width: 720px;
+    /* wrapper holds the wax seal + stacked-page pseudo-elements */
+    .letter-wrapper {
+      max-width: 700px;
       margin: 0 auto;
-      border-top: 3px solid var(--gold);
       position: relative;
-      overflow: hidden;
+      padding-top: 32px;
     }
 
-    .letter-card::before {
-      content: '❝';
+    /* stacked pages peeping behind the letter */
+    .letter-wrapper::before,
+    .letter-wrapper::after {
+      content: '';
       position: absolute;
-      top: 20px; left: 28px;
-      font-size: 5rem;
-      color: var(--blush);
-      line-height: 1;
-      font-family: 'Playfair Display', serif;
-      opacity: 0.4;
+      bottom: -5px;
+      left: 50%;
+      width: calc(100% - 24px);
+      height: calc(100% - 32px);
+      background: #f0e6d6;
+      border-radius: 3px;
+      transform: translateX(-50%) rotate(-1.8deg);
+      z-index: 0;
+      border: 1px solid rgba(201,169,110,0.18);
+    }
+
+    .letter-wrapper::after {
+      background: #e8daca;
+      width: calc(100% - 40px);
+      transform: translateX(-50%) rotate(1.2deg);
+      bottom: -9px;
+    }
+
+    /* wax seal */
+    .wax-seal {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) rotate(-7deg);
+      width: 60px;
+      height: 60px;
+      z-index: 3;
+      filter: drop-shadow(0 4px 8px rgba(100,30,22,0.4));
+    }
+
+    .wax-seal-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 36% 34%, #d44f3e 0%, #9b2418 52%, #5c1009 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        inset 0 1px 3px rgba(255,255,255,0.18),
+        inset 0 -2px 5px rgba(0,0,0,0.25);
+    }
+
+    .wax-seal-circle span {
+      font-family: 'Alex Brush', cursive;
+      font-size: 1.75rem;
+      color: rgba(255,240,230,0.92);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      margin-top: 2px;
+    }
+
+    /* the letter card itself */
+    .letter-card {
+      position: relative;
+      z-index: 1;
+      border-radius: 3px;
+      overflow: hidden;
+      border: 1px solid rgba(201,169,110,0.22);
+
+      /* warm cream paper colour */
+      background-color: #FDF7EE;
+
+      /* paper grain + faint ruled lines */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E"),
+        repeating-linear-gradient(
+          transparent 0px,
+          transparent 33px,
+          rgba(201,169,110,0.09) 33px,
+          rgba(201,169,110,0.09) 34px
+        );
+      background-size: 250px 250px, 100% 34px;
+      background-attachment: local;
+
+      padding: clamp(52px, 7vw, 76px) clamp(40px, 7vw, 68px) clamp(40px, 6vw, 60px);
+    }
+
+    /* left red margin line */
+    .letter-card::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: clamp(62px, 10vw, 88px);
+      width: 1px;
+      background: rgba(210,120,120,0.22);
+    }
+
+    /* dog-ear fold top-right */
+    .letter-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 36px; height: 36px;
+      background: linear-gradient(
+        225deg,
+        #ede3d2 0%, #ede3d2 50%,
+        transparent 50%
+      );
+      border-bottom-left-radius: 3px;
     }
 
     .letter-date {
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
+      font-size: 0.8rem;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
+      text-align: right;
+      padding-right: 4px;
     }
 
     .letter-salutation {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-style: italic;
       color: var(--brown);
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .letter-body {
-      font-size: 1.05rem;
-      line-height: 2;
+      font-size: 1.04rem;
+      line-height: 2.05;
       color: var(--brown-mid);
     }
 
-    .letter-body p + p { margin-top: 20px; }
+    .letter-body p + p { margin-top: 18px; }
 
-    .letter-closing {
-      margin-top: 36px;
-      font-family: 'Great Vibes', cursive;
-      font-size: 2rem;
+    .letter-closing-wrap {
+      margin-top: 40px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(201,169,110,0.28);
+    }
+
+    .letter-sign-off {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--brown-mid);
+      margin-bottom: 2px;
+    }
+
+    .letter-sig {
+      font-family: 'Alex Brush', cursive;
+      font-size: 3rem;
       color: var(--blush-deep);
+      line-height: 1.2;
     }
 
     /* ─── MUSIC PLAYER ───────────────────────────────────── */
@@ -1045,40 +1152,53 @@
       <div class="gold-line"></div>
     </div>
 
-    <div class="letter-card reveal" style="transition-delay:0.2s">
-      <p class="letter-date">May 26, 2026</p>
-      <p class="letter-salutation">My dearest George,</p>
-      <div class="letter-body">
-        <p>
-          Twenty-six. I keep turning that number over in my mind, thinking about
-          all the years that shaped you into the person sitting across from me —
-          the little boy in the Bob the Builder shirt who clearly believed he could
-          fix anything, the tiny gentleman in the tuxedo who was already practicing
-          for a life of making people smile, the kid with the bright eyes who had
-          no idea yet how brightly he would shine.
-        </p>
-        <p>
-          And now here you are. A man who paints the world more beautifully than
-          most people see it. Who brings warmth into every room he walks into.
-          Who loves with his whole chest and doesn't know how rare that is.
-        </p>
-        <p>
-          Knowing you has changed me. You have
-          taught me what it looks like to care about things deeply, to pursue what
-          moves you, to be fully present. You show up with your whole self with gentleness, kindness, wit,
-          and curiosity and you have made my world so much richer for it.
-        </p>
-        <p>
-          On this birthday, I hope you feel how loved you are. Not just by me but by everyone
-          lucky enough to have you in their lives. You deserve every good thing.
-          You deserve a year as beautiful as you are.
-        </p>
-        <p>
-          Thank you for being you. Thank you for being mine.
-          Happy birthday, pookies.
-        </p>
+    <div class="letter-wrapper reveal" style="transition-delay:0.2s">
+
+      <!-- wax seal -->
+      <div class="wax-seal" aria-hidden="true">
+        <div class="wax-seal-circle"><span>H</span></div>
       </div>
-      <p class="letter-closing">All my love, always — Henisha 🤍</p>
+
+      <div class="letter-card">
+        <p class="letter-date">May 26, 2026</p>
+        <p class="letter-salutation">My dearest George,</p>
+        <div class="letter-body">
+          <p>
+            Twenty-six. I keep turning that number over in my mind, thinking about
+            all the years that shaped you into the person sitting across from me —
+            the little boy in the Bob the Builder shirt who clearly believed he could
+            fix anything, the tiny gentleman in the tuxedo who was already practicing
+            for a life of making people smile, the kid with the bright eyes who had
+            no idea yet how brightly he would shine.
+          </p>
+          <p>
+            And now here you are. A man who paints the world more beautifully than
+            most people see it. Who brings warmth into every room he walks into.
+            Who loves with his whole chest and doesn't know how rare that is.
+          </p>
+          <p>
+            Knowing you has changed me. You have taught me what it looks like to
+            care about things deeply, to pursue what moves you, to be fully present.
+            You show up with your whole self — your gentleness, your wit, your
+            curiosity — and you have made my world so much richer for it.
+          </p>
+          <p>
+            On this birthday, I hope you feel how loved you are. Not just by me —
+            though you are, completely and without reservation — but by everyone
+            lucky enough to have you in their lives. You deserve every good thing.
+            You deserve a year as beautiful as you are.
+          </p>
+          <p>
+            Thank you for being you. Thank you for being mine.
+            Happy birthday, pookies. 🐒🤍
+          </p>
+        </div>
+        <div class="letter-closing-wrap">
+          <p class="letter-sign-off">With all my love, always —</p>
+          <p class="letter-sig">Henisha</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
