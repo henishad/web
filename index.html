@@ -615,6 +615,124 @@
       line-height: 1.2;
     }
 
+    /* ─── SCRATCH CARD ──────────────────────────────────── */
+    #scratch-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: rgba(10, 5, 3, 0.97);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    #scratch-screen.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #scratch-screen.hiding {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s ease;
+    }
+
+    .scratch-eyebrow {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .scratch-card-wrap {
+      position: relative;
+      width: min(480px, 92vw);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow:
+        0 24px 64px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.07);
+    }
+
+    /* revealed message sits underneath the canvas */
+    .scratch-message {
+      width: 100%;
+      padding: 52px 40px 48px;
+      background: linear-gradient(135deg, #fff0f6 0%, #fde8d8 45%, #fffbec 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .scratch-msg-top {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.4rem;
+      color: var(--blush-deep);
+    }
+
+    .scratch-msg-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 700;
+      color: var(--brown);
+      line-height: 1.1;
+      margin-top: 2px;
+    }
+
+    .scratch-msg-name {
+      font-family: 'Alex Brush', cursive;
+      font-size: clamp(3rem, 9vw, 4.8rem);
+      color: var(--blush-deep);
+      line-height: 1.15;
+    }
+
+    .scratch-msg-icons {
+      font-size: 1.8rem;
+      margin-top: 6px;
+      letter-spacing: 0.1em;
+    }
+
+    /* canvas layered on top of message */
+    #scratch-canvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* progress bar */
+    .scratch-progress-bar {
+      width: min(480px, 92vw);
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .scratch-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--blush), var(--gold), var(--banana));
+      border-radius: 2px;
+      transition: width 0.12s linear;
+    }
+
+    .scratch-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.28);
+    }
+
     /* ─── MUSIC PLAYER ───────────────────────────────────── */
     #music-player {
       position: fixed;
@@ -1232,6 +1350,28 @@
   </p>
 </footer>
 
+<!-- ═══ SCRATCH CARD ═════════════════════════════════════════ -->
+<div id="scratch-screen">
+  <p class="scratch-eyebrow">✦ one more thing ✦</p>
+
+  <div class="scratch-card-wrap">
+    <!-- message revealed underneath -->
+    <div class="scratch-message">
+      <p class="scratch-msg-top">surprise!</p>
+      <p class="scratch-msg-title">Happy Birthday</p>
+      <p class="scratch-msg-name">Pookies 🐒</p>
+      <p class="scratch-msg-icons">🎂 ✨ 🤍</p>
+    </div>
+    <!-- scratch surface canvas, sized by JS -->
+    <canvas id="scratch-canvas"></canvas>
+  </div>
+
+  <div class="scratch-progress-bar">
+    <div class="scratch-progress-fill" id="scratch-progress"></div>
+  </div>
+  <p class="scratch-hint">drag your finger to scratch away the surface</p>
+</div>
+
 <!-- ═══ MUSIC ════════════════════════════════════════════════ -->
 <audio id="bg-music" loop preload="auto">
   <source src="audio/all-the-things.mp3" type="audio/mpeg" />
@@ -1279,10 +1419,10 @@
       gate.classList.add('celebrate');
       document.querySelector('.gate-terminal').classList.add('celebrate');
       setTimeout(() => launchConfetti(), 80);
-      // then fade out after confetti has had its moment
+      // gate fades, scratch card slides in
       setTimeout(() => {
         gate.classList.add('unlocking');
-        startMusic();
+        showScratchCard();
         setTimeout(() => { gate.style.display = 'none'; }, 950);
       }, 2200);
     } else {
@@ -1349,6 +1489,129 @@
   const toggleBtn   = document.getElementById('music-toggle');
   const iconPause   = document.getElementById('icon-pause');
   const iconPlay    = document.getElementById('icon-play');
+
+  // ── Scratch card ─────────────────────────────────────────────
+  function showScratchCard() {
+    const screen = document.getElementById('scratch-screen');
+    screen.classList.add('visible');
+    // Wait one frame so layout is ready before sizing canvas
+    requestAnimationFrame(() => requestAnimationFrame(initScratch));
+  }
+
+  function initScratch() {
+    const canvas   = document.getElementById('scratch-canvas');
+    const msg      = document.querySelector('.scratch-message');
+    const progress = document.getElementById('scratch-progress');
+    const ctx      = canvas.getContext('2d');
+    const dpr      = window.devicePixelRatio || 1;
+
+    const w = msg.offsetWidth;
+    const h = msg.offsetHeight;
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    canvas.width  = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.scale(dpr, dpr);
+
+    // ── Draw scratch surface ──────────────────────────────────
+    // Warm silver-gold gradient
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0,    '#c8bfb4');
+    grad.addColorStop(0.28, '#e8dfd4');
+    grad.addColorStop(0.55, '#d4c9bc');
+    grad.addColorStop(0.82, '#e0d7cc');
+    grad.addColorStop(1,    '#b8b0a4');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Sparkle tiling
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = '12px serif';
+    for (let row = 16; row < h; row += 30) {
+      for (let col = (Math.floor(row / 30) % 2 === 0 ? 8 : 24); col < w; col += 40) {
+        ctx.fillText('✦', col, row);
+      }
+    }
+
+    // Centre label
+    ctx.save();
+    ctx.fillStyle = 'rgba(70,50,38,0.38)';
+    ctx.font = `bold 12px "SF Mono","Fira Code",monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('✦  S C R A T C H  T O  R E V E A L  ✦', w / 2, h / 2 - 8);
+    ctx.fillStyle = 'rgba(70,50,38,0.28)';
+    ctx.font = `11px "SF Mono","Fira Code",monospace`;
+    ctx.fillText('drag your finger across the card', w / 2, h / 2 + 12);
+    ctx.restore();
+
+    // ── Scratch mechanics ─────────────────────────────────────
+    let isDown   = false;
+    let revealed = false;
+    let lastX = 0, lastY = 0;
+    let tick  = 0;
+    const BRUSH = Math.round(Math.min(w, h) * 0.11);
+
+    function scratchAt(x, y) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth   = BRUSH * 2;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, BRUSH, 0, Math.PI * 2);
+      ctx.fill();
+      lastX = x;
+      lastY = y;
+      // sample every 6th event — getImageData is expensive
+      if (++tick % 6 === 0) checkPct();
+    }
+
+    function xy(e) {
+      const r = canvas.getBoundingClientRect();
+      const s = e.touches ? e.touches[0] : e;
+      return { x: s.clientX - r.left, y: s.clientY - r.top };
+    }
+
+    canvas.addEventListener('mousedown',  e => { const p = xy(e); isDown = true; lastX = p.x; lastY = p.y; scratchAt(p.x, p.y); });
+    canvas.addEventListener('mousemove',  e => { if (!isDown) return; const p = xy(e); scratchAt(p.x, p.y); });
+    canvas.addEventListener('mouseup',    () => isDown = false);
+    canvas.addEventListener('mouseleave', () => isDown = false);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); const p = xy(e); isDown = true; lastX = p.x; lastY = p.y; scratchAt(p.x, p.y); }, { passive: false });
+    canvas.addEventListener('touchmove',  e => { e.preventDefault(); if (!isDown) return; const p = xy(e); scratchAt(p.x, p.y); }, { passive: false });
+    canvas.addEventListener('touchend',   () => isDown = false);
+
+    function checkPct() {
+      if (revealed) return;
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let gone = 0;
+      for (let i = 3; i < data.length; i += 4) if (data[i] < 128) gone++;
+      const pct = gone / (data.length / 4);
+      progress.style.width = Math.min(pct * 100, 100).toFixed(1) + '%';
+      if (pct > 0.58) completeReveal();
+    }
+
+    function completeReveal() {
+      if (revealed) return;
+      revealed = true;
+      // Fade out the remaining scratch coating
+      canvas.style.transition = 'opacity 0.75s ease';
+      canvas.style.opacity    = '0';
+      progress.style.width    = '100%';
+      // After coating gone, enjoy the message, then load site
+      setTimeout(() => {
+        canvas.remove();
+        setTimeout(() => {
+          const screen = document.getElementById('scratch-screen');
+          screen.classList.add('hiding');
+          startMusic();
+          setTimeout(() => { screen.style.display = 'none'; }, 750);
+        }, 2000);
+      }, 800);
+    }
+  }
 
   // ── Confetti burst ───────────────────────────────────────────
   function launchConfetti() {
